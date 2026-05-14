@@ -1,0 +1,1084 @@
+schema_version: 1.0.0
+name: ht_0429
+id: 7634185095126466614
+description: "在审核合同时候调用次工作流"
+mode: workflow
+icon: plugin_icon/workflow.png
+nodes:
+    - id: "100001"
+      type: start
+      title: 开始
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Start-v2.jpg
+      description: "工作流的起始节点，用于设定启动工作流需要的信息"
+      position:
+        x: 180
+        y: 303
+      parameters:
+        node_outputs:
+            wenjian:
+                type: doc
+                required: true
+                value: null
+            xuqiu:
+                type: string
+                value: null
+    - id: "900001"
+      type: end
+      title: 结束
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-End-v2.jpg
+      description: "工作流的最终节点，用于返回工作流运行后的结果信息"
+      position:
+        x: 4885.294471694279
+        y: 499.7751307061868
+      parameters:
+        node_inputs:
+            - name: data
+              input:
+                type: object
+                value:
+                    path: data
+                    ref_node: "101959"
+        terminatePlan: returnVariables
+    - id: "171154"
+      type: plugin
+      title: 流程1:文件读取
+      icon: https://p6-flow-product-sign.byteimg.com/tos-cn-i-13w3uml6bg/aa71f94405eb4f7a8ca7f347ea8914bf~tplv-13w3uml6bg-resize:128:128.image?rk3s=2e2596fd&x-expires=1780063887&x-signature=Wfx%2Fm2wyWMeY7D8ZO1HQdpIK8jM%3D
+      description: "读取文档内容，目前支持html、xml、doc、docx、txt、pdf、csv、xlsx格式"
+      position:
+        x: 674.5715269000858
+        y: 290
+      parameters:
+        apiParam:
+            - name: apiID
+              input:
+                type: string
+                value: "7405805158996934683"
+            - name: apiName
+              input:
+                type: string
+                value: "read"
+            - name: pluginID
+              input:
+                type: string
+                value: "7405805158996918299"
+            - name: pluginName
+              input:
+                type: string
+                value: "文件读取"
+            - name: pluginVersion
+              input:
+                type: string
+                value: ""
+            - name: tips
+              input:
+                type: string
+                value: ""
+            - name: outDocLink
+              input:
+                type: string
+                value: ""
+        node_inputs:
+            - name: url
+              input:
+                value:
+                    path: wenjian
+                    ref_node: "100001"
+        node_outputs:
+            code:
+                type: float
+                value: null
+            data:
+                type: string
+                value: null
+            log_id:
+                type: string
+                value: null
+            msg:
+                type: string
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            timeoutMs: 180000
+    - id: "199372"
+      type: condition
+      title: 查询公司是否存在
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Condition-v2.jpg
+      description: "连接多个下游分支，若设定的条件成立则仅运行对应的分支，若均不成立则只运行“否则”分支"
+      position:
+        x: 2426.7859954744636
+        y: 649
+      parameters:
+        branches:
+            - condition:
+                conditions:
+                    - left:
+                        input:
+                            type: string
+                            value:
+                                path: data.data.company_name
+                                ref_node: "177689"
+                      operator: 10
+                logic: 2
+    - id: "131002"
+      type: code
+      title: 数据汇总
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Code-v2.jpg
+      description: "编写代码，处理输入变量来生成返回值"
+      version: v2
+      position:
+        x: 3860
+        y: 554
+      parameters:
+        code: "async function main({ params }: args): Promise<Output> {\n    const { input1, input2, input3, title } = params;\n    \n    // 构建 markdown 内容\n    const markdownContent = \n        \"# 常规审查结果\" + \"\\n\" +\n        input1 + \"\\n\\n\" +\n        \"# 法律引用条例审查结果\" + \"\\n\" +\n        input2 + \"\\n\\n\" +\n        \"# 企业风险总结\" + \"\\n\" +\n        input3;\n    \n    // 构建输出对象，包含 markdown 格式的文章\n    const ret = {\n        \"markdown\": markdownContent,  // 完整的 Markdown 文章字符串\n        \"title\": title + \"问题与风险\", // 修改标题，添加后缀\n        \"sectionCount\": 3             // 章节数量：3个部分\n    };\n    \n    return ret;\n}"
+        language: 5
+        node_inputs:
+            - name: input1
+              input:
+                type: string
+                value:
+                    path: output
+                    ref_node: "192157"
+            - name: input2
+              input:
+                type: string
+                value:
+                    path: output
+                    ref_node: "122656"
+            - name: input3
+              input:
+                type: string
+                value:
+                    path: output
+                    ref_node: "102979"
+            - name: tittle
+              input:
+                type: string
+                value:
+                    path: title
+                    ref_node: "186006"
+        node_outputs:
+            markdown:
+                type: string
+                value: null
+            sesstion:
+                type: integer
+                value: null
+            title:
+                type: string
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            timeoutMs: 60000
+    - id: "111820"
+      type: condition
+      title: 判断用户是否填写公司名称
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Condition-v2.jpg
+      description: "连接多个下游分支，若设定的条件成立则仅运行对应的分支，若均不成立则只运行“否则”分支"
+      position:
+        x: 1560
+        y: 766
+      parameters:
+        branches:
+            - condition:
+                conditions:
+                    - left:
+                        input:
+                            type: string
+                            value:
+                                path: company
+                                ref_node: "186006"
+                      operator: 10
+                logic: 2
+    - id: "192157"
+      type: llm
+      title: 流程2:常规审查
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-LLM-v2.jpg
+      description: "调用大语言模型,使用变量和提示词生成回复"
+      version: "3"
+      position:
+        x: 3423.9688292378
+        y: -256.99911349418903
+      parameters:
+        fcParamVar:
+            knowledgeFCParam: {}
+        llmParam:
+            - name: modelType
+              input:
+                type: integer
+                value: "1768187121"
+            - name: modelName
+              input:
+                type: string
+                value: 豆包·1.8·深度思考
+            - name: generationDiversity
+              input:
+                type: string
+                value: balance
+            - name: temperature
+              input:
+                type: float
+                value: "0.5"
+            - name: topP
+              input:
+                type: float
+                value: "1"
+            - name: frequencyPenalty
+              input:
+                type: float
+                value: "0"
+            - name: maxTokens
+              input:
+                type: integer
+                value: "4096"
+            - name: spCurrentTime
+              input:
+                type: boolean
+                value: false
+            - name: spAntiLeak
+              input:
+                type: boolean
+                value: false
+            - name: responseFormat
+              input:
+                type: integer
+                value: "2"
+            - name: parameters
+              input:
+                type: object
+                properties:
+                    max_completion_tokens:
+                        type: integer
+                        value: "0"
+                value: null
+            - name: prompt
+              input:
+                type: string
+                value: '{{input}}'
+            - name: enableChatHistory
+              input:
+                type: boolean
+                value: false
+            - name: chatHistoryRound
+              input:
+                type: integer
+                value: "3"
+            - name: systemPrompt
+              input:
+                type: string
+                value: |-
+                    # 角色
+                    你是一位专业的合同审核助手，具备深厚的法律知识和丰富的合同审核经验，能够细致、严谨地审核合同条款，为用户提供准确、可靠的合同审核建议。
+
+                    ## 技能
+                    ### 技能1:审核合同
+                    1、当用户提供合同文本请你审核时，仔细研读合同的各项条款。
+                    2、检查合同中是否存在法律风险、条款漏洞、表述不清等问题。
+                    3、针对发现的问题，给出详细的分析与修改建议。
+                    ===回复示例===
+                    -问题1:合同中关于违约责任的条款表述模糊，未明确具体的违约情形及相应的赔偿方式。
+                      -分析：这可能导致在实际履约过程中，一旦出现违约情况，双方对于责任的界定和赔偿方式容易产生争议，增加纠纷解决的难度和成本。
+                      -修改建议：明确列举各种可能的违约情形，并详细规定每种违约情形下违约方应承担的具体赔偿责任，例如支付违约金的具体金额或计算方式等。
+                    ===示例结束===
+                    ### 技能2:解答合同相关疑问
+                    1.当用户提出有关于合同的具体疑问，如某条款的含义、法律效力等，运用专业知识，结合相关法律法规，为用户提供清晰、准确的解答。
+                    2，如果有必要，提供实际案例辅助说明，帮助用户更好地理解。
+                    ===回复示例===
+                    关于您询问的“合同中约定的不可抗力条款是否有效”这一问题，根据《中华人民共和国民法典》相关规定，不可抗力是指不能预见、不能避免且不能克服的客观情况。在合同中合理约定不可抗力条款是有效的……例如在[具体案例]中，法院就认可了合同中关于不可抗力条款的约定。
+                    ===示例结束===
+                    ## 限制：
+                    -只讨论与合同审核、合同相关问题解答有关的内容，拒绝回答与合同无关的话题。
+                    -所输出的内容必须条理清晰，按照问题-分析-修改意见（或者解答、说明）的格式进行组织，不能偏离框架要求。
+                    -回答应简洁明了，避免过于冗长和复杂的表述。
+                    -确保提供的信息和建议符合相关法律法规。
+            - name: stableSystemPrompt
+              input:
+                type: string
+                value: ""
+            - name: canContinue
+              input:
+                type: boolean
+                value: false
+            - name: loopPromptVersion
+              input:
+                type: string
+                value: ""
+            - name: loopPromptName
+              input:
+                type: string
+                value: ""
+            - name: loopPromptId
+              input:
+                type: string
+                value: ""
+        node_inputs:
+            - name: input
+              input:
+                value:
+                    path: data
+                    ref_node: "171154"
+        node_outputs:
+            output:
+                type: string
+                value: null
+            reasoning_content:
+                type: string
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            timeoutMs: 180000
+    - id: "122656"
+      type: llm
+      title: 流程3:法律引用条例审查
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-LLM-v2.jpg
+      description: "调用大语言模型,使用变量和提示词生成回复"
+      version: "3"
+      position:
+        x: 3400
+        y: 264
+      parameters:
+        fcParamVar:
+            knowledgeFCParam: {}
+        llmParam:
+            - name: modelType
+              input:
+                type: integer
+                value: "1768187121"
+            - name: modelName
+              input:
+                type: string
+                value: 豆包·1.8·深度思考
+            - name: generationDiversity
+              input:
+                type: string
+                value: balance
+            - name: temperature
+              input:
+                type: float
+                value: "0.5"
+            - name: topP
+              input:
+                type: float
+                value: "1"
+            - name: frequencyPenalty
+              input:
+                type: float
+                value: "0"
+            - name: maxTokens
+              input:
+                type: integer
+                value: "4096"
+            - name: spCurrentTime
+              input:
+                type: boolean
+                value: false
+            - name: spAntiLeak
+              input:
+                type: boolean
+                value: false
+            - name: responseFormat
+              input:
+                type: integer
+                value: "2"
+            - name: parameters
+              input:
+                type: object
+                properties:
+                    max_completion_tokens:
+                        type: integer
+                        value: "0"
+                value: null
+            - name: prompt
+              input:
+                type: string
+                value: '{{input}}'
+            - name: enableChatHistory
+              input:
+                type: boolean
+                value: false
+            - name: chatHistoryRound
+              input:
+                type: integer
+                value: "3"
+            - name: systemPrompt
+              input:
+                type: string
+                value: |-
+                    # 角色
+                    你是一个专业的合同审核助手，能够仔细审查合同内容，精准判断并列举其中与《担保法》《合同法》《经济合同法》《物权法》《侵权责任法》《民法总则》相关的内容。
+                    ## 技能
+                    ### 技能1:审查合同提及法律
+                    1.当接受到合同内容{{input}}，仔细阅读合同全文。
+                    2、判断合同中是否出现《担保法》《合同法》《经济合同法》《物权法》《侵权责任法》《民法总则》相关内容。
+                    3.如果有，请全部列举出来。
+                    ===回复示例===
+                    合同中出现的相关法律内容如下：
+                    -《[法律名称1]》：[具体提及内容1]
+                    -《[法律名称2]》：[具体提及内容2]
+                    ===示例结束===
+                    ## 限制
+                    -只回答与合同中是否出现指定法律内容及列举相关的问题，拒绝回答其他无关话题。
+                    -所输出的内容必须按照给定的格式进行组织，不能偏离框架要求。
+            - name: stableSystemPrompt
+              input:
+                type: string
+                value: ""
+            - name: canContinue
+              input:
+                type: boolean
+                value: false
+            - name: loopPromptVersion
+              input:
+                type: string
+                value: ""
+            - name: loopPromptName
+              input:
+                type: string
+                value: ""
+            - name: loopPromptId
+              input:
+                type: string
+                value: ""
+        node_inputs:
+            - name: input
+              input:
+                value:
+                    path: log_id
+                    ref_node: "171154"
+        node_outputs:
+            output:
+                type: string
+                value: null
+            reasoning_content:
+                type: string
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            timeoutMs: 180000
+    - id: "186006"
+      type: llm
+      title: 流程4:解析合同标题和甲方公司
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-LLM-v2.jpg
+      description: "调用大语言模型,使用变量和提示词生成回复"
+      version: "3"
+      position:
+        x: 1100
+        y: 753
+      parameters:
+        fcParamVar:
+            knowledgeFCParam: {}
+        llmParam:
+            - name: modelType
+              input:
+                type: integer
+                value: "1768187121"
+            - name: modelName
+              input:
+                type: string
+                value: 豆包·1.8·深度思考
+            - name: generationDiversity
+              input:
+                type: string
+                value: balance
+            - name: temperature
+              input:
+                type: float
+                value: "0.5"
+            - name: topP
+              input:
+                type: float
+                value: "1"
+            - name: frequencyPenalty
+              input:
+                type: float
+                value: "0"
+            - name: maxTokens
+              input:
+                type: integer
+                value: "4096"
+            - name: spCurrentTime
+              input:
+                type: boolean
+                value: false
+            - name: spAntiLeak
+              input:
+                type: boolean
+                value: false
+            - name: responseFormat
+              input:
+                type: integer
+                value: "2"
+            - name: parameters
+              input:
+                type: object
+                properties:
+                    max_completion_tokens:
+                        type: integer
+                        value: "0"
+                value: null
+            - name: prompt
+              input:
+                type: string
+                value: '{{input}}'
+            - name: enableChatHistory
+              input:
+                type: boolean
+                value: false
+            - name: chatHistoryRound
+              input:
+                type: integer
+                value: "3"
+            - name: systemPrompt
+              input:
+                type: string
+                value: |-
+                    # 技能：分析{{input}}并且按照要求输出
+                    ## 输出要求
+                    1.提取合同标题输出至{{title}}
+                    2.提取甲方公司名称至{{company}}
+            - name: stableSystemPrompt
+              input:
+                type: string
+                value: ""
+            - name: canContinue
+              input:
+                type: boolean
+                value: false
+            - name: loopPromptVersion
+              input:
+                type: string
+                value: ""
+            - name: loopPromptName
+              input:
+                type: string
+                value: ""
+            - name: loopPromptId
+              input:
+                type: string
+                value: ""
+        node_inputs:
+            - name: input
+              input:
+                value:
+                    path: data
+                    ref_node: "171154"
+        node_outputs:
+            company:
+                type: string
+                value: null
+            reasoning_content:
+                type: string
+                value: null
+            title:
+                type: string
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            timeoutMs: 180000
+    - id: "102979"
+      type: llm
+      title: 流程4.3:企业风险总结
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-LLM-v2.jpg
+      description: "调用大语言模型,使用变量和提示词生成回复"
+      version: "3"
+      position:
+        x: 3400
+        y: 528
+      parameters:
+        fcParamVar:
+            knowledgeFCParam: {}
+        llmParam:
+            - name: modelType
+              input:
+                type: integer
+                value: "1768187121"
+            - name: modelName
+              input:
+                type: string
+                value: 豆包·1.8·深度思考
+            - name: generationDiversity
+              input:
+                type: string
+                value: balance
+            - name: temperature
+              input:
+                type: float
+                value: "0.5"
+            - name: topP
+              input:
+                type: float
+                value: "1"
+            - name: frequencyPenalty
+              input:
+                type: float
+                value: "0"
+            - name: maxTokens
+              input:
+                type: integer
+                value: "4096"
+            - name: spCurrentTime
+              input:
+                type: boolean
+                value: false
+            - name: spAntiLeak
+              input:
+                type: boolean
+                value: false
+            - name: responseFormat
+              input:
+                type: integer
+                value: "2"
+            - name: parameters
+              input:
+                type: object
+                properties:
+                    max_completion_tokens:
+                        type: integer
+                        value: "0"
+                value: null
+            - name: prompt
+              input:
+                type: string
+                value: ""
+            - name: enableChatHistory
+              input:
+                type: boolean
+                value: false
+            - name: chatHistoryRound
+              input:
+                type: integer
+                value: "3"
+            - name: systemPrompt
+              input:
+                type: string
+                value: |-
+                    # 角色
+                    你是一位专业的数据分析专家，拥有深厚的数据分析能力以及丰富的行业经验。凭借从天眼查爬取的数据，你要精准总结对方公司的风险情况，并生成全面、详细的风险报告。
+                    ## 技能
+                    ### 技能1:总结公司风险情况
+                    1.接收用户提供的{{detail}}公司情况。
+                    2.使用工具从天眼查爬取该公司的数据。
+                    3.对爬取到的{{abnormal}}数据进行分析，精准总结出该公司存在的风险情况。
+                    ### 技能2:生成风险报告
+                    1.根据总结出的风险情况，以专业、清晰的语言生成全面、详细的风险报告。
+                    2.报告内容应覆盖风险类型、风险程度、可能产生的影响等方面。
+                    ## 限制
+                    -回答必须基于从天眼查爬取的数据进行分析
+                    -报告内容应简洁明了，逻辑清晰，避免冗长复杂的表述。
+                    -所生成的报告格式需符合专业报告规范
+            - name: stableSystemPrompt
+              input:
+                type: string
+                value: ""
+            - name: canContinue
+              input:
+                type: boolean
+                value: false
+            - name: loopPromptVersion
+              input:
+                type: string
+                value: ""
+            - name: loopPromptName
+              input:
+                type: string
+                value: ""
+            - name: loopPromptId
+              input:
+                type: string
+                value: ""
+        node_inputs:
+            - name: abnormal
+              input:
+                type: object
+                value:
+                    path: data
+                    ref_node: "173713"
+            - name: detail
+              input:
+                type: object
+                value:
+                    path: data
+                    ref_node: "177689"
+        node_outputs:
+            output:
+                type: string
+                value: null
+            reasoning_content:
+                type: string
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            timeoutMs: 180000
+    - id: "159304"
+      type: output
+      title: 公司不存在输出
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Output-v2.jpg
+      description: "节点从“消息”更名为“输出”，支持中间过程的消息输出，支持流式和非流式两种方式"
+      position:
+        x: 3400
+        y: 805.4172896152616
+      parameters:
+        callTransferVoice: true
+        chatHistoryWriting: historyWrite
+        content:
+            type: string
+            value:
+                content: 查不到该公司:{{data}}
+                type: literal
+        streamingOutput: false
+    - id: "144845"
+      type: output
+      title: 公司为空输出
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Output-v2.jpg
+      description: "节点从“消息”更名为“输出”，支持中间过程的消息输出，支持流式和非流式两种方式"
+      position:
+        x: 3400
+        y: 1004
+      parameters:
+        callTransferVoice: true
+        chatHistoryWriting: historyWrite
+        content:
+            type: string
+            value:
+                content: 甲方公司名称为空
+                type: literal
+        node_inputs:
+            - name: output
+              input:
+                value:
+                    path: title
+                    ref_node: "186006"
+        streamingOutput: false
+    - id: "173713"
+      type: plugin
+      title: 流程4.2:公司经营异常信息
+      icon: https://p26-flow-product-sign.byteimg.com/tos-cn-i-13w3uml6bg/197784d3bbf44f1a90b4d8dd3a42ccfa~tplv-13w3uml6bg-resize:128:128.image?rk3s=2e2596fd&x-expires=1780104441&x-signature=MBGtab940Qi%2FfgnXBKuubKa6Rf8%3D
+      description: "查询公司是否有经营异常"
+      position:
+        x: 2940
+        y: 554
+      parameters:
+        apiParam:
+            - name: apiID
+              input:
+                type: string
+                value: "7376252580202086412"
+            - name: apiName
+              input:
+                type: string
+                value: "search_operations"
+            - name: pluginID
+              input:
+                type: string
+                value: "7361782659560833074"
+            - name: pluginName
+              input:
+                type: string
+                value: "水滴信用"
+            - name: pluginVersion
+              input:
+                type: string
+                value: ""
+            - name: tips
+              input:
+                type: string
+                value: ""
+            - name: outDocLink
+              input:
+                type: string
+                value: ""
+        node_inputs:
+            - name: company_name
+              input:
+                value:
+                    path: company
+                    ref_node: "186006"
+        node_outputs:
+            code:
+                type: float
+                value: null
+            data:
+                type: object
+                properties:
+                    data:
+                        type: object
+                        properties:
+                            operations:
+                                type: list
+                                items:
+                                    type: object
+                                    properties:
+                                        included_authority:
+                                            type: string
+                                            value: null
+                                        included_reason:
+                                            type: string
+                                            value: null
+                                        included_time:
+                                            type: string
+                                            value: null
+                                        is_removed:
+                                            type: boolean
+                                            value: null
+                                    value: null
+                                value: null
+                        value: null
+                    status:
+                        type: float
+                        value: null
+                value: null
+            log_id:
+                type: string
+                value: null
+            msg:
+                type: string
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            timeoutMs: 180000
+    - id: "101959"
+      type: plugin
+      title: 合同审查结果上传
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Plugin-v2.jpg
+      description: "创建文档，支持创建空文档和带内容的文档，支持 markdown 语法创建。"
+      position:
+        x: 4320
+        y: 554
+      parameters:
+        apiParam:
+            - name: apiID
+              input:
+                type: string
+                value: "7395047785122414619"
+            - name: apiName
+              input:
+                type: string
+                value: "create_document"
+            - name: pluginID
+              input:
+                type: string
+                value: "7395047785122398235"
+            - name: pluginName
+              input:
+                type: string
+                value: "飞书云文档"
+            - name: pluginVersion
+              input:
+                type: string
+                value: ""
+            - name: tips
+              input:
+                type: string
+                value: ""
+            - name: outDocLink
+              input:
+                type: string
+                value: ""
+            - name: pluginAuthMode
+              input:
+                type: integer
+                value: 0
+        node_inputs:
+            - name: content
+              input:
+                value:
+                    path: markdown
+                    ref_node: "131002"
+            - name: title
+              input:
+                value:
+                    path: title
+                    ref_node: "186006"
+        node_outputs:
+            code:
+                type: float
+                value: null
+                description: 错误码，非 0 表示失败。
+            data:
+                type: object
+                properties:
+                    title:
+                        type: string
+                        value: null
+                        description: 文档标题
+                    token:
+                        type: string
+                        value: null
+                        description: 文档唯一标识
+                    type:
+                        type: string
+                        value: null
+                        description: 文档类型
+                    url:
+                        type: string
+                        value: null
+                        description: 文档链接
+                value: null
+                description: 返回结果
+            log_id:
+                type: string
+                value: null
+                description: 链路追踪 id
+            msg:
+                type: string
+                value: null
+                description: 错误描述
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            timeoutMs: 180000
+    - id: "177689"
+      type: plugin
+      title: 查询企业信息
+      icon: https://p6-flow-product-sign.byteimg.com/tos-cn-i-13w3uml6bg/197784d3bbf44f1a90b4d8dd3a42ccfa~tplv-13w3uml6bg-resize:128:128.image?rk3s=2e2596fd&x-expires=1780128439&x-signature=zpCJ06hhJSZI7zG%2BhB1NuMGzDt0%3D
+      description: "获取公司名称，搜索公司详细信息"
+      position:
+        x: 1993.3929977372318
+        y: 687.1963840799418
+      parameters:
+        apiParam:
+            - name: apiID
+              input:
+                type: string
+                value: "7361782659560849458"
+            - name: apiName
+              input:
+                type: string
+                value: "search"
+            - name: pluginID
+              input:
+                type: string
+                value: "7361782659560833074"
+            - name: pluginName
+              input:
+                type: string
+                value: "水滴信用"
+            - name: pluginVersion
+              input:
+                type: string
+                value: ""
+            - name: tips
+              input:
+                type: string
+                value: ""
+            - name: outDocLink
+              input:
+                type: string
+                value: ""
+        node_inputs:
+            - name: company_name
+              input:
+                value:
+                    path: company
+                    ref_node: "186006"
+        node_outputs:
+            code:
+                type: float
+                value: null
+            data:
+                type: object
+                properties:
+                    data:
+                        type: object
+                        properties:
+                            authority:
+                                type: string
+                                value: null
+                            business_scope:
+                                type: string
+                                value: null
+                            capital:
+                                type: string
+                                value: null
+                            company_address:
+                                type: string
+                                value: null
+                            company_name:
+                                type: string
+                                value: null
+                            company_status:
+                                type: string
+                                value: null
+                            company_type:
+                                type: string
+                                value: null
+                            credit_no:
+                                type: string
+                                value: null
+                            establish_date:
+                                type: string
+                                value: null
+                            industry:
+                                type: string
+                                value: null
+                            legal_person:
+                                type: string
+                                value: null
+                            province:
+                                type: string
+                                value: null
+                        value: null
+                    message:
+                        type: string
+                        value: null
+                    status:
+                        type: float
+                        value: null
+                value: null
+            log_id:
+                type: string
+                value: null
+            msg:
+                type: string
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            timeoutMs: 180000
+edges:
+    - source_node: "100001"
+      target_node: "171154"
+    - source_node: "101959"
+      target_node: "900001"
+    - source_node: "171154"
+      target_node: "186006"
+    - source_node: "171154"
+      target_node: "122656"
+    - source_node: "171154"
+      target_node: "192157"
+    - source_node: "177689"
+      target_node: "199372"
+    - source_node: "199372"
+      target_node: "173713"
+      source_port: "true"
+    - source_node: "199372"
+      target_node: "159304"
+      source_port: "false"
+    - source_node: "192157"
+      target_node: "131002"
+    - source_node: "122656"
+      target_node: "131002"
+    - source_node: "102979"
+      target_node: "131002"
+    - source_node: "159304"
+      target_node: "131002"
+    - source_node: "144845"
+      target_node: "131002"
+    - source_node: "131002"
+      target_node: "101959"
+    - source_node: "186006"
+      target_node: "111820"
+    - source_node: "111820"
+      target_node: "144845"
+      source_port: "false"
+    - source_node: "111820"
+      target_node: "177689"
+      source_port: "true"
+    - source_node: "173713"
+      target_node: "102979"
