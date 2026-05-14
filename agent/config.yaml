@@ -1,0 +1,19 @@
+# 合同审阅助手 — 智能体配置
+name: "合同审阅助手"
+description: "智能审阅合同文档，从商业、法律、合规等多维度识别风险点，并给出具体修改建议。适用于企业法务、商务谈判、合同签署前的审查环节。"
+platform: "coze"
+version: "1.0.0"
+
+# 模型配置（根据实际修改）
+model:
+  provider: ""  # 如: coze, openai, claude
+  name: ""      # 模型名称
+  temperature: 0.7
+
+# 上下文
+context:
+  max_tokens: 4096
+  memory: true
+
+# 插件列表（根据实际填写）
+plugins: []
